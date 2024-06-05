@@ -45,6 +45,12 @@ func testHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
+	// Check if the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
 	// Ensure the "uploads" directory exists
 	err := os.MkdirAll("./uploads", os.ModePerm)
 	if err != nil {
