@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"testing"
@@ -13,7 +12,16 @@ func TestPingHandler(t *testing.T) {
 		t.Errorf("Failed to send request: %v", err)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
+	}()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d", http.StatusOK, resp.StatusCode)
+		return
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -21,5 +29,5 @@ func TestPingHandler(t *testing.T) {
 		return
 	}
 
-	fmt.Println("Response:", string(body))
+	t.Log("Response:", string(body))
 }
